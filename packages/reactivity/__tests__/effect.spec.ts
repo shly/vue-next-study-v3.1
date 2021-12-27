@@ -35,8 +35,9 @@ describe('reactivity/effect', () => {
     effect(() => (dummy = counter.num1 + counter.num1 + counter.num2))
 
     expect(dummy).toBe(0)
-    counter.num1 = counter.num2 = 7
-    expect(dummy).toBe(21)
+    counter.num1 = 7
+    // counter.num1 = counter.num2 = 7
+    expect(dummy).toBe(14)
   })
 
   it('should handle multiple effects', () => {

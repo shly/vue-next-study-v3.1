@@ -10,11 +10,18 @@ type KeyToDepMap = Map<any, Dep>
 const targetMap = new WeakMap<any, KeyToDepMap>()
 
 export interface ReactiveEffect<T = any> {
-  (): T
+  // 可以使用带有调用签名的对象字面量来定义泛型函数：
+  //   function identity<T>(arg: T): T {
+  //     return arg;
+  // }
+
+  // let myIdentity: {<T>(arg: T): T} = identity;
+  (): T 
   _isEffect: true
   id: number
   active: boolean
   raw: () => T
+  // 持有当前 effect 的dep 数组
   deps: Array<Dep>
   options: ReactiveEffectOptions
   allowRecurse: boolean
@@ -83,7 +90,8 @@ export function effect<T = any>(
 
 export function stop(effect: ReactiveEffect) {
   if (effect.active) {
-    cleanup(effect)
+    // 清空effect.deps
+    cleanup(effect) 
     if (effect.options.onStop) {
       effect.options.onStop()
     }
@@ -157,6 +165,7 @@ export function track(target: object, type: TrackOpTypes, key: unknown) {
   if (!shouldTrack || activeEffect === undefined) {
     return
   }
+  // targetMap <target, <key, [activeEffect]>>
   let depsMap = targetMap.get(target)
   if (!depsMap) {
     targetMap.set(target, (depsMap = new Map()))
@@ -167,6 +176,9 @@ export function track(target: object, type: TrackOpTypes, key: unknown) {
   }
   if (!dep.has(activeEffect)) {
     dep.add(activeEffect)
+    // 所以 deps 就是 effect 中所依赖的 key 对应的 set 集合数组，
+    //  毕竟一般来说，effect 中不止依赖一个对象或者不止依赖一个对象的一个key，而且 一个对象可以能不止被一个 effect 使用，
+    //  所以是 set 集合数组。
     activeEffect.deps.push(dep)
     if (__DEV__ && activeEffect.options.onTrack) {
       activeEffect.options.onTrack({
@@ -216,6 +228,7 @@ export function trigger(
     })
   } else {
     // schedule runs for SET | ADD | DELETE
+    // 向effects中添加
     if (key !== void 0) {
       add(depsMap.get(key))
     }
