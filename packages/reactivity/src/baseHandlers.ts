@@ -80,8 +80,10 @@ function createArrayInstrumentations() {
 function createGetter(isReadonly = false, shallow = false) {
   return function get(target: Target, key: string | symbol, receiver: object) {
     if (key === ReactiveFlags.IS_REACTIVE) {
+      // 如果key是__v_isReactive，返回!isReadonly， 用于isReactive方法
       return !isReadonly
     } else if (key === ReactiveFlags.IS_READONLY) {
+      // 如果key是__v_isReadonly，返回isReadonly， 用于isReadonly方法
       return isReadonly
     } else if (
       key === ReactiveFlags.RAW &&
@@ -95,6 +97,7 @@ function createGetter(isReadonly = false, shallow = false) {
             : reactiveMap
         ).get(target)
     ) {
+       // 如果key是__v_raw，并且对象之前被代理过，直接将target返回。主要用于toRaw方法，返回 reactive 或 readonly 代理的原始对象。
       return target
     }
 

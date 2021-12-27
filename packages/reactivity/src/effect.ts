@@ -151,7 +151,7 @@ function cleanup(effect: ReactiveEffect) {
     deps.length = 0
   }
 }
-
+// todo shouldTrack和trackStack什么时候用？
 let shouldTrack = true
 const trackStack: boolean[] = []
 
@@ -184,6 +184,8 @@ export function track(target: object, type: TrackOpTypes, key: unknown) {
   }
   let dep = depsMap.get(key)
   if (!dep) {
+    // 这里为什么不用WeakSet而是用Set？
+    // 因为后面需要遍历dep， WeakSet不提供遍历方法
     depsMap.set(key, (dep = new Set()))
   }
   if (!dep.has(activeEffect)) {
