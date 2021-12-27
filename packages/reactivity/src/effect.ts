@@ -5,6 +5,15 @@ import { EMPTY_OBJ, isArray, isIntegerKey, isMap } from '@vue/shared'
 // Conceptually, it's easier to think of a dependency as a Dep class
 // which maintains a Set of subscribers, but we simply store them as
 // raw Sets to reduce memory overhead.
+
+// 为什么是{target -> key -> dep}，而不是{target -> dep}
+// 因为如果不对比key,那么下面代码中effect会执行两次，其实只应该执行一次，虽然执行两次结果也是正确的
+// let dummy
+// const counter = reactive({ nested: { num1: 0, num2: 1 } })
+// effect(() => {
+//   dummy = counter.nested.num1
+// })
+// counter.nested.num2 = 8
 type Dep = Set<ReactiveEffect>
 type KeyToDepMap = Map<any, Dep>
 const targetMap = new WeakMap<any, KeyToDepMap>()
@@ -168,6 +177,9 @@ export function track(target: object, type: TrackOpTypes, key: unknown) {
   // targetMap <target, <key, [activeEffect]>>
   let depsMap = targetMap.get(target)
   if (!depsMap) {
+    // 这里为什么不用WeakMap而是用Map？
+    // 因为key有可能不是对象，而WeakMap的key一定是对象
+    // WeakMap只接受对象作为键名（null除外），不接受其他类型的值作为键名。
     targetMap.set(target, (depsMap = new Map()))
   }
   let dep = depsMap.get(key)

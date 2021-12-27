@@ -6,7 +6,8 @@ import {
 
 const get = (target, key, receiver) => {
   track(target, key)
-  return Reflect.get(target, key, receiver)
+  const result = Reflect.get(target, key, receiver)
+  return isObject(result) ? reactive(result): result
 }
 const set = (target, key, value, receiver) => {
   Reflect.set(target, key, value, receiver)
