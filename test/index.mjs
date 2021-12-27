@@ -9,4 +9,4 @@ effect(() => (dummy = counter.num1 + counter.num1 + counter.num2))
 assert.deepEqual(dummy, 0);
 counter.num1 = counter.num2 = 7
 // expect(dummy).toBe(14)
-assert.deepEqual(dummy, 14);
+assert.deepEqual(dummy, 21);
