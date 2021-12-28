@@ -6,5 +6,5 @@ const counter = reactive([1])
 // effect(() => {
 //   dummy = counter.length
 // })
-counter.unshift(2)
-// counter.push(2)
+// counter.unshift(2)
+counter.push(2)

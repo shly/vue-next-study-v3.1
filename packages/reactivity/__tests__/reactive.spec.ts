@@ -44,6 +44,18 @@ describe('reactivity/reactive', () => {
     expect(isReactive(observed.array)).toBe(true)
     expect(isReactive(observed.array[0])).toBe(true)
   })
+  test('test array', () => {
+    const original =  ['lucy']
+    const observed = reactive(original)
+    // let result
+    // effect(() => {
+    //   result = observed[1]
+    // })
+    // expect(result).toBe(undefined)
+    observed.unshift('lily')
+    expect(observed[1]).toBe('lucy')
+    // expect(observed.length).toBe(2)
+  })
 
   test('observing subtypes of IterableCollections(Map, Set)', () => {
     // subtypes of Map

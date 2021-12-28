@@ -3,7 +3,6 @@ import {
   track,
   trigger
 } from './effect.mjs'
-let timer = null
 const get = (target, key, receiver) => {
   console.log('*******getter', key)
   track(target, key)

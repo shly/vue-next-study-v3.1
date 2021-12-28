@@ -102,7 +102,7 @@ function createGetter(isReadonly = false, shallow = false) {
     }
 
     const targetIsArray = isArray(target)
-
+    
     if (!isReadonly && targetIsArray && hasOwn(arrayInstrumentations, key)) {
       return Reflect.get(arrayInstrumentations, key, receiver)
     }
@@ -153,6 +153,13 @@ function createSetter(shallow = false) {
       value = toRaw(value)
       oldValue = toRaw(oldValue)
       if (!isArray(target) && isRef(oldValue) && !isRef(value)) {
+        // 如果target不是数组，且oldValue是Ref类型，但是value不是Ref类型，则修改的是原Ref类型的对象的value，场景如下
+        // const ageRef = ref(1)
+        // const ageReactive = reactiveMethod({
+        //   age:ageRef
+        // })
+        // ageReactive.age++
+        // todo 这个时候不需要触发更新么
         oldValue.value = value
         return true
       }
@@ -166,6 +173,15 @@ function createSetter(shallow = false) {
         : hasOwn(target, key)
     const result = Reflect.set(target, key, value, receiver)
     // don't trigger if target is something up in the prototype chain of original
+    // 可能的场景如下
+    // const state = reactive({
+    //   name: 1,
+    //   nested: {
+    //     bar: 2
+    //   },
+    // })
+    // const test = Object.create(state)
+    // test.name++
     if (target === toRaw(receiver)) {
       if (!hadKey) {
         trigger(target, TriggerOpTypes.ADD, key, value)
