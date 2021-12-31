@@ -52,8 +52,8 @@ describe('reactivity/reactive', () => {
     //   result = observed[1]
     // })
     // expect(result).toBe(undefined)
-    observed.unshift('lily')
-    expect(observed[1]).toBe('lucy')
+    observed.push('lily')
+    // expect(observed[1]).toBe('lucy')
     // expect(observed.length).toBe(2)
   })
 

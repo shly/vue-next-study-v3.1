@@ -115,7 +115,7 @@ function createReactiveEffect<T = any>(
   options: ReactiveEffectOptions
 ): ReactiveEffect<T> {
   const effect = function reactiveEffect(): unknown {
-    if (!effect.active) {
+    if (!effect.active) { // todo active的应用场景？
       return fn()
     }
     if (!effectStack.includes(effect)) {

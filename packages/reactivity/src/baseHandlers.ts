@@ -114,6 +114,7 @@ function createGetter(isReadonly = false, shallow = false) {
     }
 
     if (!isReadonly) {
+      console.log('track  get', key)
       track(target, TrackOpTypes.GET, key)
     }
 
@@ -184,9 +185,13 @@ function createSetter(shallow = false) {
     // test.name++
     if (target === toRaw(receiver)) {
       if (!hadKey) {
+        console.log('trigger ADD', key)
         trigger(target, TriggerOpTypes.ADD, key, value)
       } else if (hasChanged(value, oldValue)) {
+        console.log('trigger SET', key)
         trigger(target, TriggerOpTypes.SET, key, value, oldValue)
+      } else {
+        console.log('untrigger', key)
       }
     }
     return result
